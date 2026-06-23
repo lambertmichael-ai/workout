@@ -797,6 +797,40 @@ body{
 .tr.first{color:var(--blue);border-color:rgba(74,159,212,.35);background:rgba(74,159,212,.07);}
 .tr.pr{color:var(--gold);border-color:var(--gold-line);background:var(--gold-soft);}
 
+/* ===== PROGRESS CHART ===== */
+.log-chart:empty{display:none;}
+.chart-title{
+  font-family:'Oswald',sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:16px 0 8px;
+}
+.chart-svg{
+  width:100%;
+  height:auto;
+  display:block;
+  background:var(--surface2);
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+.chart-meta{
+  display:flex;
+  justify-content:space-between;
+  font-family:'Oswald',sans-serif;
+  font-size:11px;
+  letter-spacing:.03em;
+  color:var(--dim);
+  margin-top:6px;
+}
+.chart-empty{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:14px;
+}
+
 /* progress bar under detail head */
 .prog-wrap{padding:14px 20px 0;}
 .prog-track{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
@@ -1121,17 +1155,45 @@ function getLast(key){
   const a = loadLogs()[key];
   return (a && a.length) ? a[a.length-1] : null;
 }
-function setsToText(sets){
-  return sets.filter(s=>s.w||s.r).map(s=>{
-    const w = s.w ? s.w+(/[a-z]/i.test(s.w)?'':' lb') : '–';
-    const r = s.r || '–';
-    return w+' × '+r;
+/* ---- decide what to log for each move: weight+reps, reps only, seconds, or nothing ---- */
+function logType(name, s){
+  const sl = String(s).toLowerCase();
+  const nl = String(name).toLowerCase();
+  if(!/\d/.test(sl)) return 'none';                 // nothing numeric to log (e.g. "As usual")
+  if(/\bmin\b/.test(sl)) return 'none';             // walks and long posture holds
+  if(/\bsec\b/.test(sl)) return 'time';             // planks and timed holds
+  // band and bodyweight moves have no external load, so log reps only
+  if(/\bband\b|bodyweight|glute bridge|scapular push|push up|wall slide|prone y|bicycle crunch|leg raise|reverse crunch|dead bug|chin tuck|wall posture|short foot/.test(nl)) return 'reps';
+  return 'weight';                                  // dumbbell work: weight + reps
+}
+
+/* ---- progress metric per session: volume for weighted, total reps/seconds otherwise ---- */
+function metric(entry){
+  const t = entry.type || 'weight';
+  return entry.sets.reduce((acc,s)=>{
+    const w = parseFloat(s.w)||0, r = parseFloat(s.r)||0;
+    return acc + (t==='weight' ? w*r : r);
+  },0);
+}
+function metricLabel(type){
+  return type==='weight' ? 'Volume (weight × reps)' : type==='time' ? 'Total seconds held' : 'Total reps';
+}
+
+function setsToText(entry){
+  const t = entry.type || 'weight';
+  return entry.sets.filter(s=>s.w||s.r).map(s=>{
+    if(t==='weight'){
+      const w = s.w ? (/[a-z]/i.test(s.w)?s.w:s.w+' lb') : '–';
+      return w+' × '+(s.r||'–');
+    }
+    if(t==='time') return (s.r||'–')+' sec';
+    return (s.r||'–')+' reps';
   }).join('   ');
 }
 function lastSummary(key){
   const l = getLast(key);
   if(!l) return '';
-  const t = setsToText(l.sets);
+  const t = setsToText(l);
   if(!t) return '';
   return 'Last ('+fmtDate(l.date)+'):  '+t;
 }
@@ -1139,42 +1201,33 @@ function histHtml(key){
   const a = loadLogs()[key];
   if(!a || !a.length) return '';
   const rows = a.slice(-8).reverse().map(en=>{
-    const t = setsToText(en.sets);
+    const t = setsToText(en);
     if(!t) return '';
     return '<div class="h-row"><span class="hd">'+fmtDate(en.date)+'</span><span class="hv">'+esc(t)+'</span></div>';
   }).filter(Boolean).join('');
   if(!rows) return '';
   return '<div class="hist-title">History</div>'+rows;
 }
-
-/* ---- progress: score a session by volume (weight×reps), or total reps if bodyweight ---- */
-function sessionScore(sets){
-  return sets.reduce((acc,s)=>{
-    const w = parseFloat(s.w)||0;
-    const r = parseFloat(s.r)||0;
-    return acc + (w>0 ? w*r : r);
-  },0);
-}
 function trendInfo(key){
   const a = loadLogs()[key];
   if(!a || !a.length) return null;
   const last = a[a.length-1];
   const prev = a.length>=2 ? a[a.length-2] : null;
-  const lv = sessionScore(last.sets);
+  const type = last.type || 'weight';
+  const lv = metric(last);
   let dir='first', pct=0;
   if(prev){
-    const pv = sessionScore(prev.sets);
+    const pv = metric(prev);
     if(pv>0){ pct = Math.round((lv-pv)/pv*100); dir = lv>pv?'up' : lv<pv?'down' : 'same'; }
     else { dir = lv>0?'up':'same'; }
   }
-  // personal best across all sessions
-  let anyW=false, prW=0, prR=0;
-  a.forEach(s=>s.sets.forEach(x=>{
+  let prW=0, prR=0;
+  a.forEach(en=>en.sets.forEach(x=>{
     const w=parseFloat(x.w)||0, r=parseFloat(x.r)||0;
-    if(w>0){ anyW=true; if(w>prW) prW=w; }
+    if(w>prW) prW=w;
     if(r>prR) prR=r;
   }));
-  return {dir, pct, anyW, prW, prR, lv};
+  return {dir, pct, type, prW, prR, lv};
 }
 function trendHtml(key){
   const t = trendInfo(key);
@@ -1185,9 +1238,36 @@ function trendHtml(key){
   else if(t.dir==='same') chip = `<span class="tr same">— Same as last</span>`;
   else chip = `<span class="tr first">First log</span>`;
   let pr='';
-  if(t.anyW && t.prW>0) pr = `<span class="tr pr">PR ${t.prW} lb</span>`;
+  if(t.type==='weight' && t.prW>0) pr = `<span class="tr pr">PR ${t.prW} lb</span>`;
+  else if(t.type==='time' && t.prR>0) pr = `<span class="tr pr">Best ${t.prR} sec</span>`;
   else if(t.prR>0) pr = `<span class="tr pr">Best ${t.prR} reps</span>`;
   return chip + pr;
+}
+function chartHtml(key){
+  const a = loadLogs()[key];
+  if(!a) return '';
+  const pts = a.map(en=>({d:en.date, v:metric(en)})).filter(p=>p.v>0);
+  if(pts.length===0) return '';
+  if(pts.length===1) return '<div class="chart-empty">Log one more session to unlock your progress chart.</div>';
+  const type = a[a.length-1].type || 'weight';
+  const W=320, H=120, padX=12, padTop=14, padBot=18;
+  const vals = pts.map(p=>p.v);
+  let mn=Math.min(...vals), mx=Math.max(...vals);
+  if(mn===mx){ mn = mn*0.9; mx = mx*1.1 || 1; }
+  const n = pts.length;
+  const X = i => padX + (i/(n-1))*(W-2*padX);
+  const Y = v => padTop + (1-(v-mn)/(mx-mn))*(H-padTop-padBot);
+  const line = pts.map((p,i)=>X(i).toFixed(1)+','+Y(p.v).toFixed(1)).join(' ');
+  const area = padX+','+(H-padBot).toFixed(1)+' '+line+' '+X(n-1).toFixed(1)+','+(H-padBot).toFixed(1);
+  const dots = pts.map((p,i)=>'<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="2.6" fill="#c9a24b"/>').join('');
+  const first = pts[0], lastp = pts[n-1];
+  return '<div class="chart-title">'+metricLabel(type)+'</div>'+
+    '<svg class="chart-svg" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+
+      '<polygon points="'+area+'" fill="rgba(201,162,75,.10)"/>'+
+      '<polyline points="'+line+'" fill="none" stroke="#c9a24b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'+
+      dots+
+    '</svg>'+
+    '<div class="chart-meta"><span>'+fmtDate(first.d)+' · '+first.v+'</span><span>'+fmtDate(lastp.d)+' · '+lastp.v+'</span></div>';
 }
 
 /* ============ NAVIGATION ============ */
@@ -1248,18 +1328,28 @@ function showDays(){
 
 let currentDay = null;
 
-function setRows(key, sc){
+function setRows(key, type, sc){
   const last = getLast(key);
   let h = '';
   for(let i=0;i<sc;i++){
-    const w = (last && last.sets[i]) ? esc(last.sets[i].w) : '';
-    const r = (last && last.sets[i]) ? esc(last.sets[i].r) : '';
-    h += `
+    const ls = (last && last.sets[i]) ? last.sets[i] : null;
+    const r = ls ? esc(ls.r||'') : '';
+    if(type==='weight'){
+      const w = ls ? esc(ls.w||'') : '';
+      h += `
       <div class="set-row">
         <span class="sl">Set ${i+1}</span>
         <div class="fld"><input type="text" inputmode="decimal" placeholder="0" value="${w}" onclick="event.stopPropagation()"><span class="u">lb</span></div>
         <div class="fld"><input type="text" inputmode="numeric" placeholder="0" value="${r}" onclick="event.stopPropagation()"><span class="u">reps</span></div>
       </div>`;
+    } else {
+      const unit = type==='time' ? 'sec' : 'reps';
+      h += `
+      <div class="set-row">
+        <span class="sl">Set ${i+1}</span>
+        <div class="fld"><input type="text" inputmode="numeric" placeholder="0" value="${r}" onclick="event.stopPropagation()"><span class="u">${unit}</span></div>
+      </div>`;
+    }
   }
   return h;
 }
@@ -1283,9 +1373,26 @@ function openDay(id){
     html += `<div class="block-label">${b.block}</div>`;
     b.items.forEach(it=>{
       const key = exKey(id, it.n);
+      const type = logType(it.n, it.s);
       const sc = setCount(it.s);
-      html += `
-        <div class="ex" data-key="${esc(key)}">
+      if(type==='none'){
+        html += `
+        <div class="ex" data-key="${esc(key)}" data-logtype="none">
+          <div class="ex-head" onclick="toggleDone(this)">
+            <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
+            <div class="ex-body">
+              <div class="ex-top">
+                <div class="ex-name">${it.n}</div>
+                <div class="ex-sets">${it.s}</div>
+              </div>
+              ${it.d?`<div class="ex-desc">${it.d}</div>`:''}
+            </div>
+          </div>
+        </div>`;
+      } else {
+        const tap = type==='time' ? 'Tap to log your time' : type==='reps' ? 'Tap to log your reps' : 'Tap to log weight &amp; reps';
+        html += `
+        <div class="ex" data-key="${esc(key)}" data-logtype="${type}">
           <div class="ex-head" onclick="toggleLog(this)">
             <div class="check" onclick="toggleEx(event,this)"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg></div>
             <div class="ex-body">
@@ -1296,15 +1403,17 @@ function openDay(id){
               ${it.d?`<div class="ex-desc">${it.d}</div>`:''}
               <div class="ex-last" data-last>${lastSummary(key)}</div>
               <div class="ex-trend" data-trend>${trendHtml(key)}</div>
-              <div class="ex-tap">Tap to log weight &amp; reps</div>
+              <div class="ex-tap">${tap}</div>
             </div>
           </div>
           <div class="log-panel">
-            ${setRows(key, sc)}
+            ${setRows(key, type, sc)}
             <button class="log-save" onclick="saveLog(event,'${esc(key)}')">Save Set Log</button>
+            <div class="log-chart" data-chart>${chartHtml(key)}</div>
             <div class="log-hist" data-hist>${histHtml(key)}</div>
           </div>
         </div>`;
+      }
     });
   });
 
@@ -1327,21 +1436,31 @@ function toggleLog(head){
   head.closest('.ex').classList.toggle('open');
 }
 
+function toggleDone(head){
+  const ex = head.closest('.ex');
+  ex.classList.toggle('done');
+  checkState[ex.dataset.key] = ex.classList.contains('done');
+  persistChecks();
+  updateProgress();
+}
+
 function saveLog(e, key){
   e.stopPropagation();
   const ex = e.target.closest('.ex');
+  const type = ex.dataset.logtype || 'weight';
   const sets = [];
   ex.querySelectorAll('.set-row').forEach(row=>{
     const ins = row.querySelectorAll('input');
-    sets.push({ w: ins[0].value.trim(), r: ins[1].value.trim() });
+    if(type==='weight') sets.push({ w: ins[0].value.trim(), r: ins[1].value.trim() });
+    else sets.push({ w:'', r: ins[0].value.trim() });
   });
   const logs = loadLogs();
   if(!logs[key]) logs[key] = [];
   // if already logged today, overwrite today's entry instead of stacking duplicates
   const today = todayISO();
   const existing = logs[key].findIndex(en=>en.date===today);
-  if(existing>=0){ logs[key][existing] = {date:today, sets}; }
-  else { logs[key].push({date:today, sets}); }
+  if(existing>=0){ logs[key][existing] = {date:today, type, sets}; }
+  else { logs[key].push({date:today, type, sets}); }
   saveLogs(logs);
 
   // mark done
@@ -1353,9 +1472,11 @@ function saveLog(e, key){
   // refresh summaries
   const lastEl = ex.querySelector('[data-last]');
   const trendEl = ex.querySelector('[data-trend]');
+  const chartEl = ex.querySelector('[data-chart]');
   const histEl = ex.querySelector('[data-hist]');
   if(lastEl) lastEl.innerHTML = lastSummary(key);
   if(trendEl) trendEl.innerHTML = trendHtml(key);
+  if(chartEl) chartEl.innerHTML = chartHtml(key);
   if(histEl) histEl.innerHTML = histHtml(key);
 
   // feedback
