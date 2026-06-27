@@ -879,13 +879,13 @@ body{
     <div class="hero-stats">
       <div class="hero-stat"><span class="n">156→138</span><span class="l">Weight</span></div>
       <div class="hero-stat"><span class="n">7-9%</span><span class="l">Body Fat</span></div>
-      <div class="hero-stat"><span class="n">4×</span><span class="l">Per Week</span></div>
+      <div class="hero-stat"><span class="n">7×</span><span class="l">Per Week</span></div>
     </div>
   </div>
   <div class="menu">
     <button class="menu-btn" onclick="showDays()">
       <div class="menu-icon">🏋️</div>
-      <div class="menu-text"><div class="t">Workouts</div><div class="s">4 training days, 7-day week</div></div>
+      <div class="menu-text"><div class="t">Workouts</div><div class="s">7 short daily sessions</div></div>
       <div class="menu-arrow">›</div>
     </button>
     <button class="menu-btn" onclick="showView('stretch')">
@@ -987,18 +987,18 @@ body{
 <script>
 /* ============ DATA ============ */
 const ACCENT = {
-  mon:'#d0414a', tue:'#3fb96b', wed:'#c9a24b',
-  thu:'#4a9fd4', fri:'#5a5a5a', sat:'#d0414a', sun:'#5a5a5a'
+  mon:'#d0414a', tue:'#4a9fd4', wed:'#3fb96b',
+  thu:'#c9a24b', fri:'#a878c8', sat:'#3fb96b', sun:'#5a5a5a'
 };
 
 const DAYS = [
-  {id:'mon', name:'Monday', focus:'Push · Chest · Shoulders · Triceps · Abs', meta:'45 min · Upper chest first, abs to finish', rest:false},
-  {id:'tue', name:'Tuesday', focus:'Lower Body · Core · Shins', meta:'45 min · Legs, weighted core, shins', rest:false},
-  {id:'wed', name:'Wednesday', focus:'Posture · Recovery', meta:'20 min · No lifting · Walk both ways', rest:false},
-  {id:'thu', name:'Thursday', focus:'Pull · Back · Rear Delts · Biceps · Abs', meta:'45 min · Row hard, abs to finish', rest:false},
-  {id:'fri', name:'Friday', focus:'Rest', meta:'Optional easy 20 min walk · Evening stretch', rest:true},
-  {id:'sat', name:'Saturday', focus:'Upper Body · Chest · Back · Arms · Abs', meta:'45 min · Balanced push and pull, big ab block', rest:false},
-  {id:'sun', name:'Sunday', focus:'Easy Walk · Shins', meta:'30-45 min walk · Evening stretch', rest:true},
+  {id:'mon', name:'Monday', focus:'Push · Chest · Triceps · Side Delts · Abs', meta:'35-40 min · Supersets, lengthened reps, 1-2 in reserve', rest:false},
+  {id:'tue', name:'Tuesday', focus:'Pull · Back · Biceps · Rear Delts · Abs', meta:'35-40 min · Row deep, stretch the lats, abs to finish', rest:false},
+  {id:'wed', name:'Wednesday', focus:'Lower · Quads · Glutes · Calves · Core', meta:'35 min · Quad and glute focus, calves, core', rest:false},
+  {id:'thu', name:'Thursday', focus:'Shoulders & Arms · Delts · Biceps · Triceps · Abs', meta:'35 min · Build the delts and arms, supersets throughout', rest:false},
+  {id:'fri', name:'Friday', focus:'Upper · Chest & Back Supersets · Abs', meta:'35-40 min · Push and pull paired, posture emphasis', rest:false},
+  {id:'sat', name:'Saturday', focus:'Lower · Hamstrings · Glutes · Calves · Core', meta:'35 min · Posterior chain, calves, weighted core', rest:false},
+  {id:'sun', name:'Sunday', focus:'Recovery · Posture · Easy Walk', meta:'30-45 min · Posture circuit and a longer walk', rest:false},
 ];
 
 const WORKOUTS = {
@@ -1006,100 +1006,143 @@ const WORKOUTS = {
     {block:'Warm Up', items:[
       {n:'Band pull apart', s:'2 × 20'},
       {n:'Band external rotation', s:'1 × 15 ea', d:'Elbow bent 90°, tucked at your side. Rotate your forearm out against the band. Primes the cuff before pressing.'},
-      {n:'Scapular push up', s:'2 × 10', d:'Push up position, arms straight. Sink your chest between your shoulder blades, then push the floor away. Only the blades move.'},
     ]},
-    {block:'Work', items:[
-      {n:'Low incline dumbbell press', s:'4 × 6-10', d:'Bench one notch above flat. Lower 3 seconds. Drive your upper arms across your chest, not your hands to the ceiling. Stop before lockout. Ramp the first 2 sets, then 2 hard sets at 1-2 reps from failure.'},
-      {n:'Flat dumbbell press', s:'3 × 8-12', d:'Your second chest angle. Full stretch at the bottom, controlled tempo. Leave 1-2 reps in the tank.'},
-      {n:'Dumbbell lateral raise', s:'4 × 12-20', d:'Lead with the elbows. No shrug, no swing. These build the shoulder width that makes your waist look smaller.'},
-      {n:'Rear delt raise', s:'3 × 15-25', d:'Hinge forward 45°. Raise out to the sides, thumbs tilting up. Hits the back of the shoulder and fights your forward posture.'},
-      {n:'Dumbbell pullover', s:'3 × 10-12', d:'Flat bench, both hands on one dumbbell over your chest. Lower behind your head to a deep stretch, pull it back over using chest and lats.'},
-      {n:'Overhead dumbbell triceps extension', s:'3 × 10-15', d:'One dumbbell in both hands overhead. Lower behind your head, elbows pointed up, then extend. The stretch at the bottom drives the growth.'},
+    {block:'Superset 1 · Chest + Side Delts', items:[
+      {n:'Low incline dumbbell press', s:'4 × 6-10', d:'Superset: a set of this, then the laterals, rest about 60 sec, repeat. Bench one notch above flat, lower 3 seconds to a deep stretch, drive your upper arms across your chest, stop short of lockout. Ramp 2 sets, then push the last 2 to 1-2 reps from failure.'},
+      {n:'Dumbbell lateral raise', s:'4 × 12-20', d:'Lead with the elbows, no shrug, no swing. Pause a beat at the top. This is the width that makes your waist look smaller.'},
+    ]},
+    {block:'Superset 2 · Chest + Triceps', items:[
+      {n:'Flat dumbbell press', s:'3 × 8-12', d:'Superset with the triceps move. Your second chest angle, full stretch at the bottom, 1-2 reps in reserve.'},
+      {n:'Overhead dumbbell triceps extension', s:'3 × 10-15', d:'One dumbbell in both hands overhead, lower behind your head, elbows pointed up, then extend. The deep stretch is where the growth is.'},
+    ]},
+    {block:'Chest Finisher', items:[
+      {n:'Incline dumbbell fly', s:'2 × 12-15', d:'Incline bench, slight elbow bend, open wide to a big stretch, squeeze back up. Stretch under load, light weight.'},
     ]},
     {block:'Abs', items:[
-      {n:'Weighted crunch', s:'3 × 12-20', d:'On your back, a dumbbell held on your chest. Curl your ribs toward your hips, squeeze hard, lower slow. Add weight before reps once you clear 20.'},
-      {n:'Lying leg raise', s:'3 × 10-15', d:'Flat on your back, hands under your hips. Legs straight, raise to vertical, lower slow without letting your lower back arch. Bend the knees if your back lifts off.'},
+      {n:'Weighted crunch', s:'3 × 12-20', d:'A dumbbell on your chest. Curl your ribs toward your hips, squeeze, lower slow. Add weight before reps once you clear 20.'},
+      {n:'Lying leg raise', s:'3 × 12-15', d:'Hands under your hips, legs straight, raise to vertical, lower slow without arching. Bend the knees if your back lifts.'},
     ]},
   ],
   tue:[
-    {block:'Warm Up', items:[
-      {n:'Bodyweight squat', s:'2 × 10'},
-      {n:'Glute bridge', s:'2 × 12', d:'On your back, knees bent. Drive hips up, squeeze, hold 1 second.'},
-    ]},
-    {block:'Work', items:[
-      {n:'Dumbbell Romanian deadlift', s:'4 × 8-12', d:'Push hips back, lower the dumbbells down your legs, back flat. Feel the hamstrings stretch, drive hips forward to stand. Leave 1-2 reps in reserve.'},
-      {n:'Bulgarian split squat', s:'3 × 8-12 ea leg', d:'Back foot up on the bench. Drop the back knee straight down, torso tall, drive through the front heel. Go light to start, this one is brutal.'},
-      {n:'Goblet squat', s:'3 × 10-15', d:'Hold one dumbbell at your chest. Squat deep, knees tracking over the toes, push the knees out with your elbows.'},
-    ]},
-    {block:'Core', items:[
-      {n:'Weighted Russian twist', s:'3 × 12-16 ea side', d:'Seated, heels down or hovering, a dumbbell in both hands. Rotate from the waist and tap the floor each side. This replaces the oblique work the carries used to give you.'},
-      {n:'Side plank', s:'2 × 30-45 sec ea', d:'Stack the feet, hips high, body in a straight line. Trains the core to resist side bend, the other half of what carries trained.'},
-    ]},
-    {block:'Shins', items:[
-      {n:'Tibialis raise', s:'4 × 15-25', d:'Back against a wall, heels a few inches out. Lift your toes toward your shins repeatedly. Protects the shins from your walking volume.'},
-      {n:'Single leg eccentric calf', s:'3 × 8-12 ea', d:'Rise on both feet, lower slow on one. 3-4 seconds down.'},
-    ]},
-  ],
-  wed:[
-    {block:'Posture & Recovery', items:[
-      {n:'Band low to high fly', s:'3 × 25 ea', d:'Light. Band anchored low, pull up and across from hip to opposite shoulder. Squeeze the upper chest at the top.'},
-      {n:'Band pull apart', s:'3 × 25'},
-      {n:'Wall slide', s:'3 × 10', d:'Back, shoulders, head on the wall. Arms in a goalpost. Slide up overhead keeping contact, slide down.'},
-      {n:'Prone Y-T-W raise', s:'2 × 8 ea', d:'Face down on the floor. Raise the arms into a Y, then a T, then a W, squeezing the lower traps and rear delts. Light. This is the muscle that pulls your shoulders back.'},
-      {n:'Wall posture hold', s:'5 min', d:'Heels, glutes, upper back, and head all on the wall. Just hold it. Do it while watching something.'},
-      {n:'Chin tuck hold', s:'10 × 10 sec', d:'Pull your chin straight back into a double chin. Hold 10 seconds. Fixes forward head.'},
-    ]},
-  ],
-  thu:[
     {block:'Warm Up', items:[
       {n:'Band pull apart', s:'2 × 20'},
       {n:'Band face pull', s:'2 × 15', d:'Band at face height. Pull to your forehead, elbows wide, squeeze the rear delts.'},
     ]},
     {block:'Work', items:[
-      {n:'Dead-stop single arm row', s:'4 × 8-12 ea', d:'Incline bench at 30-45°, one knee and hand on it. Let the working arm hang to the floor, pause 1 full second at the bottom, then row driving the elbow down and back. No swing, full stretch every rep. Your pull-up replacement.'},
-      {n:'Chest supported row', s:'3 × 10-15', d:'Lie face down on the incline bench. Row both dumbbells to your hips, squeeze the mid-back. No lower back, no momentum.'},
-      {n:'Straight arm band pulldown', s:'3 × 15-25', d:'Band anchored high. Arms straight, pull down to your hips, feel the lats. No bent elbows.'},
-      {n:'Rear delt raise', s:'3 × 15-25', d:'Hinge 45°, raise out to the sides, thumbs up. Your second posterior delt hit of the week for posture.'},
-      {n:'Hammer curl', s:'3 × 8-12', d:'Palms facing each other the whole time, thumbs up at the top. Builds the outer arm and forearm.'},
-      {n:'Incline dumbbell curl', s:'3 × 10-15', d:'Lie back on a 45° incline, let your arms hang behind you. Curl up. The stretch at the bottom is the point.'},
+      {n:'Dead-stop single arm row', s:'4 × 8-12 ea', d:'Incline bench at 30-45°, one knee and hand on it. Let the arm hang to a full stretch, pause 1 second at the bottom, then row the elbow down and back. No swing. Your pull-up replacement for lat width.'},
+    ]},
+    {block:'Superset 1 · Mid-Back + Rear Delts', items:[
+      {n:'Chest supported row', s:'3 × 10-15', d:'Superset: a set of this, then rear delts, rest about 60 sec, repeat. Face down on the incline bench, row both dumbbells to your hips, squeeze the mid-back. No momentum.'},
+      {n:'Rear delt raise', s:'3 × 15-25', d:'Hinge forward 45°, raise out to the sides, thumbs up. Back of the shoulder, not the traps. Posture and the 3D delt look.'},
+    ]},
+    {block:'Superset 2 · Lats + Biceps', items:[
+      {n:'Straight arm band pulldown', s:'3 × 15-25', d:'Superset with the curls. Band anchored high, arms straight, pull down to your hips, feel the lats. No bent elbows.'},
+      {n:'Incline dumbbell curl', s:'3 × 10-15', d:'Lie back on a 45° incline, let your arms hang behind you, curl up. The stretch at the bottom is the whole point.'},
+    ]},
+    {block:'Biceps', items:[
+      {n:'Hammer curl', s:'2 × 10-12', d:'Palms facing each other, thumbs up at the top. Builds the outer arm and forearm thickness.'},
     ]},
     {block:'Abs', items:[
-      {n:'Bicycle crunch', s:'3 × 15-20 ea', d:'On your back, opposite elbow to opposite knee, slow and controlled. Hits the obliques and the six-pack together.'},
-      {n:'Hollow body hold', s:'3 × 20-40 sec', d:'Lower back pressed into the floor, legs and shoulders off the ground. Hold the dish shape. Shorten the legs if your back lifts.'},
+      {n:'Reverse crunch', s:'3 × 12-20', d:'On your back, knees bent, curl your hips off the floor toward your ribs. Control the lowering. Hits the lower abs.'},
+      {n:'Side plank', s:'2 × 30-45 sec ea', d:'Stack the feet, hips high, body in a straight line. Trains the core to resist side bend and carves the obliques.'},
+    ]},
+  ],
+  wed:[
+    {block:'Warm Up', items:[
+      {n:'Bodyweight squat', s:'2 × 10'},
+      {n:'Glute bridge', s:'2 × 12', d:'On your back, knees bent. Drive hips up, squeeze, hold 1 second.'},
+    ]},
+    {block:'Work', items:[
+      {n:'Goblet squat', s:'4 × 8-12', d:'Hold one dumbbell at your chest. Squat deep, knees tracking over the toes, push the knees out with your elbows. Full depth for the stretch.'},
+      {n:'Bulgarian split squat', s:'3 × 8-12 ea leg', d:'Back foot up on the bench, drop the back knee straight down, torso tall, drive through the front heel. Deep stretch on the front leg.'},
+      {n:'Reverse lunge', s:'3 × 10-12 ea leg', d:'Step back, drop the back knee, drive through the front heel. Easier on the knees than forward lunges.'},
+    ]},
+    {block:'Superset · Calves + Shins', items:[
+      {n:'Single leg calf raise', s:'3 × 10-15 ea', d:'Superset with the tibialis raise. Hold a dumbbell, rise tall on one foot, lower slow to a full stretch.'},
+      {n:'Tibialis raise', s:'3 × 15-25', d:'Back against a wall, heels out, lift your toes toward your shins. Balances the calves and protects your shins from the walking.'},
+    ]},
+    {block:'Core', items:[
+      {n:'Weighted crunch', s:'3 × 12-20', d:'A dumbbell on your chest, curl your ribs to your hips, slow on the way down.'},
+      {n:'Hollow body hold', s:'3 × 20-40 sec', d:'Lower back pressed into the floor, legs and shoulders off the ground, hold the dish. Shorten the legs if your back lifts.'},
+    ]},
+  ],
+  thu:[
+    {block:'Warm Up', items:[
+      {n:'Band pull apart', s:'2 × 20'},
+      {n:'Band external rotation', s:'1 × 15 ea', d:'Elbow bent 90° at your side, rotate the forearm out against the band. Cuff prep before pressing overhead.'},
+    ]},
+    {block:'Shoulders', items:[
+      {n:'Dumbbell shoulder press', s:'4 × 8-12', d:'Press overhead, no full lockout, core tight, no back arch. Builds the front and side delt cap.'},
+    ]},
+    {block:'Superset 1 · Side + Rear Delts', items:[
+      {n:'Dumbbell lateral raise', s:'4 × 12-20', d:'Superset: a set of side raises, then rear, rest about 60 sec, repeat. Lead with the elbows, slow down. This is the delt width that defines the Creed look.'},
+      {n:'Rear delt raise', s:'4 × 15-25', d:'Hinge 45°, thumbs up, raise to the sides. The rear delt rounds out the shoulder and pulls you upright.'},
+    ]},
+    {block:'Superset 2 · Biceps + Triceps', items:[
+      {n:'Incline dumbbell curl', s:'3 × 10-15', d:'Antagonist superset: curls then extensions, no wasted rest. Arms hanging back on the incline, curl up, feel the stretch at the bottom.'},
+      {n:'Overhead dumbbell triceps extension', s:'3 × 10-15', d:'Both hands on one dumbbell overhead, deep stretch behind the head, then extend.'},
+    ]},
+    {block:'Superset 3 · Biceps + Triceps', items:[
+      {n:'Cross body hammer curl', s:'2 × 10-12 ea', d:'Curl up and across toward the opposite shoulder, one arm at a time. Hits the brachialis for thickness.'},
+      {n:'Lying dumbbell triceps extension', s:'2 × 10-15', d:'On your back, lower the dumbbells toward your forehead, elbows still, then extend. Different angle for the long head.'},
+    ]},
+    {block:'Abs', items:[
+      {n:'Bicycle crunch', s:'3 × 15-20 ea', d:'Opposite elbow to opposite knee, slow and controlled. Obliques and the six-pack together.'},
     ]},
   ],
   fri:[
-    {block:'Rest Day', items:[
-      {n:'Optional easy walk', s:'20 min', d:'Only if your shins feel good. Keep it conversational.'},
-      {n:'Evening stretch', s:'As usual', d:'Do the full evening stretch routine tonight like every night.'},
-    ]},
-  ],
-  sat:[
     {block:'Warm Up', items:[
       {n:'Band pull apart', s:'2 × 20'},
       {n:'Band low to high fly', s:'2 × 20 ea', d:'Band anchored low, pull up and across from hip to opposite shoulder. Wakes up the upper chest.'},
     ]},
-    {block:'Work', items:[
-      {n:'Incline dumbbell press', s:'3 × 8-12', d:'A steeper incline than Monday. Drive through the chest, full stretch, finish 1-2 reps from failure.'},
-      {n:'Chest supported row', s:'3 × 10-15', d:'Face down on the incline bench, row both dumbbells to your hips. Your second back day so pull volume matches push.'},
-      {n:'Dumbbell shoulder press', s:'3 × 8-12', d:'Press overhead, no full lockout, core tight, no back arch. The vertical press the rest of the week is missing.'},
-      {n:'Dumbbell lateral raise', s:'3 × 12-20', d:'Lead with the elbows, slow on the way down. More width.'},
-      {n:'Cross body hammer curl', s:'3 × 10-12 ea', d:'Curl the dumbbell up and across toward the opposite shoulder, one arm at a time.'},
-      {n:'Lying dumbbell triceps extension', s:'3 × 10-15', d:'On your back on the bench, dumbbells lowered toward your forehead, elbows still. A different angle than Monday for the full triceps.'},
+    {block:'Superset 1 · Press + Row', items:[
+      {n:'Incline dumbbell press', s:'4 × 8-12', d:'Antagonist superset: a set of press, then a set of rows, rest about 60 sec, repeat. Deep stretch at the bottom, drive across the chest, 1-2 reps from failure.'},
+      {n:'Dead-stop single arm row', s:'4 × 8-12 ea', d:'Hang the arm to a full stretch, pause at the bottom, row the elbow down and back. Pulling that keeps your shoulders set back.'},
+    ]},
+    {block:'Superset 2 · Fly + Row', items:[
+      {n:'Band low to high fly', s:'3 × 15-20 ea', d:'Superset with the row. Pull up and across, squeeze the upper chest.'},
+      {n:'Chest supported row', s:'3 × 10-15', d:'Face down on the incline bench, row both dumbbells to your hips, squeeze the mid-back.'},
+    ]},
+    {block:'Superset 3 · Face Pull + Laterals', items:[
+      {n:'Band face pull', s:'3 × 15-25', d:'Superset with the laterals. Pull to your forehead, elbows high and wide, squeeze the rear delts. The number one posture move.'},
+      {n:'Dumbbell lateral raise', s:'3 × 12-20', d:'Lead with the elbows, slow down. Caps the delts.'},
     ]},
     {block:'Abs', items:[
-      {n:'Weighted crunch', s:'3 × 15-20', d:'Dumbbell on the chest, slow and loaded. This is the muscle-building ab work. Leanness from the kitchen reveals it.'},
-      {n:'Plank', s:'2 × 45-60 sec', d:'Forearms down, body in a straight line, squeeze the abs and glutes hard. Brace, do not let the hips sag.'},
+      {n:'Weighted crunch', s:'3 × 15-20', d:'Dumbbell on the chest, slow and loaded. Build the abs, the kitchen reveals them.'},
+      {n:'Plank', s:'2 × 45-60 sec', d:'Forearms down, straight line, squeeze the abs and glutes. Brace, do not sag.'},
+    ]},
+  ],
+  sat:[
+    {block:'Warm Up', items:[
+      {n:'Bodyweight squat', s:'2 × 10'},
+      {n:'Glute bridge', s:'2 × 12', d:'Drive the hips up, squeeze, hold 1 second. Wakes up the glutes.'},
+    ]},
+    {block:'Work', items:[
+      {n:'Dumbbell Romanian deadlift', s:'4 × 8-12', d:'Push hips back, lower the dumbbells down your legs, back flat, feel the hamstrings lengthen, drive hips forward to stand. 1-2 reps in reserve. The stretch is the stimulus.'},
+      {n:'Dumbbell hip thrust', s:'3 × 10-15', d:'Upper back on the bench, dumbbell across the hips, drive up, squeeze, chin tucked. Glute focus.'},
+      {n:'Bulgarian split squat', s:'3 × 8-12 ea leg', d:'Back foot up, drop straight down, drive through the front heel. Quad and glute, deep stretch.'},
+    ]},
+    {block:'Superset · Shins + Calves', items:[
+      {n:'Tibialis raise', s:'4 × 15-25', d:'Superset with the calf raise. Back on a wall, heels out, lift the toes. Shin protection.'},
+      {n:'Bent knee calf raise', s:'3 × 15-25', d:'Knees slightly bent, rise on the toes, lower slow. Hits the soleus.'},
+    ]},
+    {block:'Core', items:[
+      {n:'Weighted Russian twist', s:'3 × 12-16 ea side', d:'Seated, heels hovering, a dumbbell in both hands, rotate from the waist and tap each side. Obliques.'},
+      {n:'Reverse crunch', s:'3 × 12-20', d:'Knees bent, curl the hips off the floor toward the ribs, control the way down. Lower abs.'},
     ]},
   ],
   sun:[
-    {block:'Easy Walk', items:[
-      {n:'Easy walk', s:'30-45 min', d:'Conversational pace. Skip if you walked a lot Tue-Thu and your shins are sore.'},
+    {block:'Posture Circuit', items:[
+      {n:'Band low to high fly', s:'3 × 25 ea', d:'Light. Pull up and across, squeeze the upper chest at the top.'},
+      {n:'Band pull apart', s:'3 × 25', d:'Arms straight, pull the band apart, squeeze the shoulder blades. Strengthens the muscles that pull you upright.'},
+      {n:'Band face pull', s:'3 × 20', d:'Pull to your forehead, elbows wide. The single best move for your forward shoulders.'},
+      {n:'Wall slide', s:'3 × 10', d:'Back, shoulders, head on the wall, arms in a goalpost. Slide up overhead keeping contact, slide down.'},
+      {n:'Prone Y-T-W raise', s:'2 × 8 ea', d:'Face down on the floor, raise into a Y, then a T, then a W, squeezing the lower traps. Light and slow.'},
+      {n:'Wall posture hold', s:'5 min', d:'Heels, glutes, upper back, and head on the wall. Just hold it while you watch something.'},
+      {n:'Chin tuck hold', s:'10 × 10 sec', d:'Pull the chin straight back into a double chin, hold 10 seconds. Fixes forward head.'},
     ]},
-    {block:'Shins', items:[
-      {n:'Tibialis raise', s:'4 × 15-25'},
-      {n:'Bent knee calf raise', s:'3 × 15-25'},
-      {n:'Short foot drill', s:'3 × 20 sec ea', d:'Pull the ball of your foot toward your heel without curling the toes. The arch rises slightly.'},
+    {block:'Walk', items:[
+      {n:'Easy walk', s:'30-45 min', d:'Conversational pace on the pad. Recovery and fat loss without taxing the lifting.'},
     ]},
   ],
 };
@@ -1418,10 +1461,13 @@ function openDay(id){
   });
 
   if(id==='mon'){
-    html += `<div class="note stop"><span class="nl">Stop Rule</span>If the front delt takes over pressing, drop to band flyes and pullovers only.</div>`;
+    html += `<div class="note stop"><span class="nl">Stop Rule</span>If the front delt takes over pressing, drop to incline flyes and lighter presses. Train fasted, so warm up the first set extra and never hold your breath under load.</div>`;
   }
-  if(id==='thu'){
-    html += `<div class="note tip"><span class="nl">Why It Matters</span>This day is as important as Monday. A weak back is the reason front delts take over pressing.</div>`;
+  if(id==='fri'){
+    html += `<div class="note tip"><span class="nl">How To Superset</span>Do a set of the first move, then the second, rest about 60 seconds after the pair, repeat. Pairing push with pull keeps tension high while one muscle rests, so a full upper-body day fits in 35 minutes with no lost volume.</div>`;
+  }
+  if(id==='sun'){
+    html += `<div class="note tip"><span class="nl">Recovery Is Training</span>This day fixes your forward shoulders and keeps fat loss moving without taxing recovery. Keep the bands light and slow, and get your steps in.</div>`;
   }
 
   html += `<button class="reset-day" onclick="resetDay('${id}')">Reset Day's Checkmarks</button>`;
@@ -1559,24 +1605,36 @@ function initAudio(){
     if(audioCtx.state==='suspended') audioCtx.resume();
   }catch(e){}
 }
-function tone(freq, start, dur, vol){
+function tone(freq, start, dur, vol, type){
   if(!audioCtx) return;
   const t = audioCtx.currentTime + start;
   const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-  o.type = 'sine'; o.frequency.value = freq;
+  o.type = type || 'square'; o.frequency.value = freq;
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(vol, t+0.01);
+  g.gain.exponentialRampToValueAtTime(vol, t+0.006);
+  g.gain.setValueAtTime(vol, t + dur*0.65);
   g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
   o.connect(g); g.connect(audioCtx.destination);
   o.start(t); o.stop(t+dur+0.03);
 }
+// a single loud, piercing beep: two stacked square waves (fundamental + a fifth)
+// square waves are rich in harmonics and near full scale, so they cut through music
+function beep(start, freq, dur){
+  tone(freq, start, dur, 0.5, 'square');
+  tone(freq*1.5, start, dur, 0.34, 'square');
+}
 function sound(kind){
   initAudio();
-  if(kind==='work'){ tone(987,0,0.18,0.35); }
-  else if(kind==='rest'){ tone(660,0,0.16,0.30); tone(660,0.22,0.16,0.30); }
-  else if(kind==='restdone'){ tone(880,0,0.15,0.35); tone(880,0.2,0.15,0.35); tone(1175,0.4,0.32,0.42); }
-  else if(kind==='done'){ tone(784,0,0.16,0.38); tone(988,0.2,0.16,0.38); tone(1319,0.42,0.42,0.46); }
-  else { tone(880,0,0.18,0.35); }
+  if(kind==='work'){ beep(0, 988, 0.18); }
+  else if(kind==='rest'){ beep(0, 660, 0.16); beep(0.22, 660, 0.16); }
+  else if(kind==='restdone' || kind==='done'){
+    // four rising bursts, loud and repeated so it is heard over Spotify
+    beep(0.00, 1047, 0.17);
+    beep(0.24, 1047, 0.17);
+    beep(0.48, 1319, 0.17);
+    beep(0.72, 1319, 0.36);
+  }
+  else { beep(0, 988, 0.18); }
 }
 function buzz(p){ if(navigator.vibrate){ try{ navigator.vibrate(p); }catch(e){} } }
 
